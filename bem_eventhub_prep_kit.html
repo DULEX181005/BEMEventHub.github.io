@@ -1,0 +1,2083 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEM EventHub & Prep-Kit</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        bemBlue: {
+                            50: '#f0f4f8',
+                            100: '#dbeafe',
+                            500: '#1d4ed8',
+                            600: '#1e40af',
+                            800: '#1e3a8a',
+                            950: '#0f172a'
+                        },
+                        bemAmber: {
+                            500: '#f59e0b',
+                            600: '#d97706'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .heading-font {
+            font-family: 'Outfit', sans-serif;
+        }
+        /* Hide scrollbars but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Custom progress ring animation */
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Top Header Navigation -->
+    <header class="bg-bemBlue-950 text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-tr from-blue-600 to-amber-500 p-2 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-graduation-cap text-lg text-white"></i>
+                    </div>
+                    <div>
+                        <span class="heading-font text-xl font-extrabold tracking-wide bg-gradient-to-r from-blue-400 to-amber-400 bg-clip-text text-transparent">BEM EventHub</span>
+                        <p class="text-[10px] text-slate-400 -mt-1 font-semibold tracking-wider">PLATFORM PERSIAPAN PANITIA</p>
+                    </div>
+                </div>
+
+                <!-- Active Event Selector -->
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex flex-col items-end">
+                        <span class="text-xs text-slate-400">Event Aktif:</span>
+                        <select id="eventSelector" onchange="changeActiveEvent()" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-md focus:ring-amber-500 focus:border-amber-500 p-1 font-semibold">
+                            <!-- Dynamic populated options -->
+                        </select>
+                    </div>
+                    <button onclick="openNewEventModal()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow-md transition-all duration-200">
+                        <i class="fa-solid fa-plus text-[10px]"></i> Event Baru
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sub-Navbar Tab Selector (Mobile Friendly) -->
+    <div class="bg-white border-b border-slate-200 sticky top-16 z-40 shadow-sm overflow-x-auto no-scrollbar">
+        <div class="max-w-7xl mx-auto px-4 flex space-x-6">
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn py-4 px-1 border-b-2 border-blue-600 text-blue-600 font-semibold text-sm flex items-center gap-2 transition-all">
+                <i class="fa-solid fa-chart-line"></i> Ringkasan
+            </button>
+            <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn py-4 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium text-sm flex items-center gap-2 transition-all">
+                <i class="fa-solid fa-list-check"></i> Tugas Divisi
+            </button>
+            <button onclick="switchTab('rundown')" id="tab-rundown" class="tab-btn py-4 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium text-sm flex items-center gap-2 transition-all">
+                <i class="fa-solid fa-clock"></i> Rundown Acara
+            </button>
+            <button onclick="switchTab('budget')" id="tab-budget" class="tab-btn py-4 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium text-sm flex items-center gap-2 transition-all">
+                <i class="fa-solid fa-wallet"></i> Anggaran Dana
+            </button>
+            <button onclick="switchTab('docs')" id="tab-docs" class="tab-btn py-4 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium text-sm flex items-center gap-2 transition-all">
+                <i class="fa-regular fa-file-lines"></i> Berkas & Birokrasi
+            </button>
+            <button onclick="switchTab('members')" id="tab-members" class="tab-btn py-4 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium text-sm flex items-center gap-2 transition-all">
+                <i class="fa-solid fa-users"></i> Anggota Panitia
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- Custom Toast Notification Container -->
+        <div id="toastContainer" class="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+        <!-- TAB 1: DASHBOARD -->
+        <section id="content-dashboard" class="tab-content block space-y-6">
+            <!-- Event Hero Banner -->
+            <div class="bg-gradient-to-r from-blue-900 to-indigo-950 text-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-[200px] pointer-events-none">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                    <div>
+                        <span class="bg-blue-500/20 text-blue-300 text-xs font-bold px-3 py-1 rounded-full border border-blue-400/30 uppercase tracking-widest" id="dashEventCategory">Program Kerja BEM</span>
+                        <h1 class="heading-font text-3xl sm:text-4xl font-extrabold mt-2" id="dashEventTitle">Malam Keakraban & Upgrading BEM</h1>
+                        <p class="text-slate-300 text-sm mt-2 max-w-2xl" id="dashEventDesc">Proyek persiapan kegiatan internal BEM untuk mempererat relasi anggota dan membekali kemampuan manajemen kepemimpinan organisasi.</p>
+                        
+                        <div class="flex flex-wrap gap-4 mt-6 text-xs sm:text-sm text-slate-300">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-calendar text-amber-500"></i> <b id="dashEventDate">12 Juni 2026</b></span>
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-amber-500"></i> <b id="dashEventVenue">Villa Kampus Sejahtera</b></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Countdown Panel -->
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10 flex flex-col items-center min-w-[200px]">
+                        <span class="text-xs text-amber-300 font-semibold tracking-wider uppercase mb-2">HITUNG MUNDUR ACARA</span>
+                        <div class="flex gap-3 text-center">
+                            <div>
+                                <span class="heading-font text-3xl font-extrabold" id="countdownDays">00</span>
+                                <p class="text-[10px] text-slate-300">HARI</p>
+                            </div>
+                            <span class="text-2xl font-bold text-amber-400">:</span>
+                            <div>
+                                <span class="heading-font text-3xl font-extrabold" id="countdownHours">00</span>
+                                <p class="text-[10px] text-slate-300">JAM</p>
+                            </div>
+                            <span class="text-2xl font-bold text-amber-400">:</span>
+                            <div>
+                                <span class="heading-font text-3xl font-extrabold" id="countdownMins">00</span>
+                                <p class="text-[10px] text-slate-300">MENIT</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 block mb-1">PROGRES PERSIAPAN</span>
+                        <h3 class="heading-font text-2xl font-bold text-slate-800" id="statProgressPercent">0%</h3>
+                        <p class="text-xs text-slate-500 mt-1" id="statProgressSubtext">0 dari 0 tugas selesai</p>
+                    </div>
+                    <div class="h-12 w-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl shadow-inner">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 block mb-1">RUNDOWN TERENCANA</span>
+                        <h3 class="heading-font text-2xl font-bold text-slate-800" id="statRundownCount">0 Sesi</h3>
+                        <p class="text-xs text-slate-500 mt-1" id="statRundownDuration">Total durasi: 0 menit</p>
+                    </div>
+                    <div class="h-12 w-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-xl shadow-inner">
+                        <i class="fa-regular fa-clock"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 block mb-1">KEUANGAN SISA DANA</span>
+                        <h3 class="heading-font text-lg font-bold text-slate-800" id="statBudgetBalance">Rp 0</h3>
+                        <p class="text-xs text-emerald-600 mt-1 font-semibold" id="statBudgetRatio">Kondisi aman</p>
+                    </div>
+                    <div class="h-12 w-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shadow-inner">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 block mb-1">BERKAS & SURAT</span>
+                        <h3 class="heading-font text-2xl font-bold text-slate-800" id="statDocsApproved">0 / 0</h3>
+                        <p class="text-xs text-slate-500 mt-1" id="statDocsPending">Berkas disetujui Birokrasi</p>
+                    </div>
+                    <div class="h-12 w-12 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-xl shadow-inner">
+                        <i class="fa-solid fa-file-signature"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divisi Progress Matrix -->
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="heading-font text-lg font-bold text-slate-800">Progres Kesiapan per Divisi</h3>
+                        <p class="text-xs text-slate-500">Persentase pengerjaan tugas oleh masing-masing divisi panitia</p>
+                    </div>
+                    <span class="text-xs bg-slate-100 px-2.5 py-1 rounded text-slate-600 font-semibold"><i class="fa-solid fa-users-gear mr-1"></i> Divisi Aktif</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="divisionProgressContainer">
+                    <!-- Loaded dynamically via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Interactive Guidelines Card -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Checklist Birokrasi Penting -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm lg:col-span-2">
+                    <h3 class="heading-font text-lg font-bold text-slate-800 mb-2">Panduan Cepat Birokrasi Kampus</h3>
+                    <p class="text-xs text-slate-500 mb-4">Pastikan dokumen ini diurus minimal H-14 kegiatan</p>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <span class="text-amber-500 text-lg mt-0.5"><i class="fa-solid fa-circle-exclamation"></i></span>
+                            <div>
+                                <h4 class="text-sm font-semibold text-slate-800">Peminjaman Ruang / Gedung Kuliah</h4>
+                                <p class="text-xs text-slate-500">Ajukan surat peminjaman ke Sub-Bagian Sarana & Prasarana Kampus (BAUK) setelah disetujui Pembina BEM.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <span class="text-blue-500 text-lg mt-0.5"><i class="fa-solid fa-circle-info"></i></span>
+                            <div>
+                                <h4 class="text-sm font-semibold text-slate-800">Sponsorship & Pencarian Dana</h4>
+                                <p class="text-xs text-slate-500">Divisi Danus disarankan menyebar Proposal Sponsorship maksimal H-30 agar mendapatkan tanggapan brand partner tepat waktu.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Event Info editor -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="heading-font text-md font-bold text-slate-800 mb-1">Edit Info Dasar Event</h3>
+                        <p class="text-xs text-slate-500 mb-4">Sesuaikan detail kegiatan utama</p>
+                        
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block text-slate-600 font-semibold mb-1">Nama Kegiatan</label>
+                                <input type="text" id="editEventName" class="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1">Tanggal</label>
+                                    <input type="date" id="editEventDate" class="w-full border border-slate-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1">Kategori</label>
+                                    <input type="text" id="editEventCat" placeholder="cth: Internal BEM" class="w-full border border-slate-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 font-semibold mb-1">Lokasi</label>
+                                <input type="text" id="editEventVenue" class="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 mt-4">
+                        <button onclick="saveEventBasicInfo()" class="flex-grow bg-blue-600 hover:bg-blue-700 text-white text-xs py-2 rounded font-semibold transition-all">
+                            Perbarui Info
+                        </button>
+                        <button onclick="openDeleteEventModal()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs py-2 px-3 rounded font-semibold transition-all" title="Hapus Kegiatan Ini">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: TUGAS DIVISI (KANBAN BOARD) -->
+        <section id="content-tasks" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="heading-font text-lg font-bold text-slate-800">Papan Tugas Kepanitiaan (Kanban)</h3>
+                        <p class="text-xs text-slate-500">Pantau dan kelola pengerjaan tugas setiap divisi secara terstruktur.</p>
+                    </div>
+                    <button onclick="openNewTaskModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow transition-all">
+                        <i class="fa-solid fa-plus"></i> Tambah Tugas Baru
+                    </button>
+                </div>
+
+                <!-- Dynamic Division Filter -->
+                <div id="taskFiltersContainer" class="flex flex-wrap items-center gap-2 pb-4 border-b border-slate-100">
+                    <!-- Loaded dynamically via JavaScript -->
+                </div>
+
+                <!-- Kanban Columns Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+                    
+                    <!-- Column: Belum Mulai (Todo) -->
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/60 flex flex-col min-h-[450px]">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-200">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                                <h4 class="font-bold text-sm text-slate-700">Belum Mulai</h4>
+                            </div>
+                            <span id="count-todo" class="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                        </div>
+                        <div id="column-todo" class="space-y-3 flex-grow overflow-y-auto max-h-[500px] no-scrollbar">
+                            <!-- Tasks loaded dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Column: Sedang Dikerjakan (In Progress) -->
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/60 flex flex-col min-h-[450px]">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-200">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                <h4 class="font-bold text-sm text-slate-700">Sedang Dikerjakan</h4>
+                            </div>
+                            <span id="count-progress" class="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                        </div>
+                        <div id="column-progress" class="space-y-3 flex-grow overflow-y-auto max-h-[500px] no-scrollbar">
+                            <!-- Tasks loaded dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Column: Selesai (Done) -->
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/60 flex flex-col min-h-[450px]">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-200">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                <h4 class="font-bold text-sm text-slate-700">Selesai</h4>
+                            </div>
+                            <span id="count-done" class="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                        </div>
+                        <div id="column-done" class="space-y-3 flex-grow overflow-y-auto max-h-[500px] no-scrollbar">
+                            <!-- Tasks loaded dynamically -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: RUNDOWN PLANNER -->
+        <section id="content-rundown" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="heading-font text-lg font-bold text-slate-800">Penyusunan Rundown Hari-H</h3>
+                        <p class="text-xs text-slate-500">Rencanakan susunan kegiatan menit demi menit dengan presisi.</p>
+                    </div>
+                    <button onclick="openNewRundownModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow transition-all">
+                        <i class="fa-solid fa-plus"></i> Tambah Sesi Rundown
+                    </button>
+                </div>
+
+                <!-- Rundown Table Responsive Container -->
+                <div class="overflow-x-auto rounded-lg border border-slate-200">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">Waktu (WIB)</th>
+                                <th class="p-3">Nama Sesi Acara</th>
+                                <th class="p-3">Deskripsi / Detail Teknis</th>
+                                <th class="p-3">PIC (Divisi)</th>
+                                <th class="p-3 text-center">Durasi</th>
+                                <th class="p-3 text-center">Status</th>
+                                <th class="p-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rundownTableBody" class="divide-y divide-slate-200">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: BUDGET TRACKER -->
+        <section id="content-budget" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left: Budget Summary Cards & Pie Chart/Bar -->
+                <div class="space-y-6">
+                    <!-- Dynamic Summary Panel -->
+                    <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="heading-font text-lg font-bold text-slate-800">Ringkasan Keuangan</h3>
+                        
+                        <div class="space-y-3">
+                            <div class="p-3 bg-emerald-50 rounded-lg border border-emerald-100 flex items-center justify-between">
+                                <div>
+                                    <span class="text-[10px] text-emerald-800 font-bold uppercase tracking-wider block">Total Pemasukan</span>
+                                    <span class="heading-font text-xl font-bold text-slate-800" id="totalPemasukan">Rp 0</span>
+                                </div>
+                                <i class="fa-solid fa-circle-arrow-down text-emerald-500 text-xl"></i>
+                            </div>
+
+                            <div class="p-3 bg-rose-50 rounded-lg border border-rose-100 flex items-center justify-between">
+                                <div>
+                                    <span class="text-[10px] text-rose-800 font-bold uppercase tracking-wider block">Total Pengeluaran</span>
+                                    <span class="heading-font text-xl font-bold text-slate-800" id="totalPengeluaran">Rp 0</span>
+                                </div>
+                                <i class="fa-solid fa-circle-arrow-up text-rose-500 text-xl"></i>
+                            </div>
+
+                            <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                                <span class="text-xs text-blue-800 font-semibold block mb-1">SISA SALDO (NET)</span>
+                                <h3 class="heading-font text-2xl font-extrabold text-slate-800" id="budgetBalance">Rp 0</h3>
+                                <div class="w-full bg-slate-200 h-2.5 rounded-full mt-3 overflow-hidden">
+                                    <div id="budgetProgressFill" class="bg-gradient-to-r from-blue-500 to-amber-500 h-full w-0 transition-all duration-500"></div>
+                                </div>
+                                <p class="text-[11px] text-slate-500 mt-1.5" id="budgetUsageLabel">Penggunaan anggaran: 0% dari total pemasukan</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add Transaction Fast Form -->
+                    <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="heading-font text-md font-bold text-slate-800">Catat Aliran Keuangan Baru</h3>
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block text-slate-600 font-semibold mb-1">Jenis Transaksi</label>
+                                <div class="flex gap-2">
+                                    <label class="flex-1 flex items-center justify-center gap-1.5 p-2 bg-slate-50 border border-slate-300 rounded cursor-pointer select-none font-medium text-slate-700">
+                                        <input type="radio" name="transType" value="pemasukan" checked class="accent-blue-600"> Pemasukan
+                                    </label>
+                                    <label class="flex-1 flex items-center justify-center gap-1.5 p-2 bg-slate-50 border border-slate-300 rounded cursor-pointer select-none font-medium text-slate-700">
+                                        <input type="radio" name="transType" value="pengeluaran" class="accent-blue-600"> Pengeluaran
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 font-semibold mb-1">Nama Item / Keterangan</label>
+                                <input type="text" id="transName" placeholder="cth: Dana Rektorat, Sewa Sound System" class="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1">Jumlah (Rupiah)</label>
+                                    <input type="number" id="transAmount" placeholder="Angka saja" class="w-full border border-slate-300 rounded px-2 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1">Divisi Terkait</label>
+                                    <select id="transDiv" class="w-full border border-slate-300 rounded px-2 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                                        <!-- Will be populated dynamically -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="addTransaction()" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs py-2.5 rounded font-semibold transition-all shadow-md">
+                            Tambahkan Transaksi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Ledger/Transaction Table -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm lg:col-span-2 flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="heading-font text-lg font-bold text-slate-800">Buku Kas & Anggaran</h3>
+                            <p class="text-xs text-slate-500">Rincian mutasi dana masuk dan keluar untuk pelaporan LPJ.</p>
+                        </div>
+                        <span class="text-xs bg-slate-100 px-2.5 py-1 rounded text-slate-600 font-semibold"><i class="fa-solid fa-list-ol mr-1"></i> Riwayat Kas</span>
+                    </div>
+
+                    <div class="flex-grow overflow-x-auto rounded-lg border border-slate-200">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3">Keterangan</th>
+                                    <th class="p-3">Divisi</th>
+                                    <th class="p-3 text-right">Pemasukan (Rp)</th>
+                                    <th class="p-3 text-right">Pengeluaran (Rp)</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionTableBody" class="divide-y divide-slate-200">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: DOCUMENT & PERMIT TRACKER -->
+        <section id="content-docs" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="heading-font text-lg font-bold text-slate-800">Pelacak Birokrasi & Kelengkapan Berkas</h3>
+                        <p class="text-xs text-slate-500">Monitor pengajuan proposal, LPJ, peminjaman alat, serta surat undangan agar tidak terlewat.</p>
+                    </div>
+                    <button onclick="openNewDocModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow transition-all">
+                        <i class="fa-solid fa-plus"></i> Daftarkan Berkas Baru
+                    </button>
+                </div>
+
+                <!-- Berkas Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="documentsGrid">
+                    <!-- Loaded dynamically via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 6: MEMBERS PER DIVISION -->
+        <section id="content-members" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left: Add Member Form -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm space-y-4 h-fit">
+                    <h3 class="heading-font text-lg font-bold text-slate-800">Tambah Anggota Baru</h3>
+                    <p class="text-xs text-slate-500">Daftarkan mahasiswa ke dalam kepanitiaan divisi aktif.</p>
+                    
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1">Nama Lengkap</label>
+                            <input type="text" id="newMemberName" placeholder="cth: Ahmad Dahlan" class="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1">Divisi Panitia</label>
+                            <select id="newMemberDiv" class="w-full border border-slate-300 rounded px-2 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                                <!-- Dynamic options based on active divisions -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 font-semibold mb-1">Jabatan / Peran</label>
+                            <input type="text" id="newMemberRole" placeholder="cth: Co-Coordinator, Anggota Staff" class="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                    </div>
+                    
+                    <button onclick="addMember()" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs py-2.5 rounded font-semibold transition-all shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i> Tambah Anggota
+                    </button>
+                </div>
+
+                <!-- Right: Divisions & Member List Grid -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm lg:col-span-2 space-y-4">
+                    <div>
+                        <h3 class="heading-font text-lg font-bold text-slate-800">Daftar Anggota per Divisi</h3>
+                        <p class="text-xs text-slate-500">Struktur personalia kepanitiaan yang bertugas pada setiap divisi.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="divisionalMembersContainer">
+                        <!-- Loaded dynamically via JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL POPUPS -->
+    <!-- 1. Modal New Event -->
+    <div id="modalNewEvent" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl relative">
+            <h3 class="heading-font text-xl font-bold text-slate-800 mb-2">Buat Event BEM Baru</h3>
+            <p class="text-xs text-slate-500 mb-4">Setiap event akan memiliki lembar kepanitiaan, anggaran, dan rundown tersendiri.</p>
+            
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1">Nama Kegiatan / Event</label>
+                    <input type="text" id="newEventTitle" placeholder="cth: Latihan Kepemimpinan Mahasiswa" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1">Deskripsi Singkat</label>
+                    <textarea id="newEventDesc" rows="3" placeholder="Tuliskan gambaran umum kegiatan..." class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1">Tanggal</label>
+                        <input type="date" id="newEventDate" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1">Kategori</label>
+                        <input type="text" id="newEventCat" placeholder="cth: Pendidikan, Keagamaan" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1">Lokasi / Venue</label>
+                    <input type="text" id="newEventVenue" placeholder="cth: Auditorium Kampus, Lapangan Utama" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="flex gap-2 mt-6">
+                <button onclick="closeModal('modalNewEvent')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-lg text-xs font-semibold transition-all">Batal</button>
+                <button onclick="saveNewEvent()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-xs font-semibold transition-all shadow-md">Buat Kegiatan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Modal New Task -->
+    <div id="modalNewTask" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <h3 class="heading-font text-xl font-bold text-slate-800 mb-2">Tambah Tugas Kepanitiaan</h3>
+            <p class="text-xs text-slate-500 mb-4">Pastikan tugas ditujukan pada divisi spesifik dan penanggung jawab yang tepat.</p>
+            
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1">Nama Tugas / Pekerjaan</label>
+                    <input type="text" id="newTaskTitle" placeholder="cth: Booking sound system & lighting" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1">Divisi Penanggung Jawab</label>
+                        <select id="newTaskDiv" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            <!-- Dynamic Load -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1">Nama Penanggung Jawab (PIC)</label>
+                        <input type="text" id="newTaskPic" placeholder="cth: Rahmat" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1">Status Kesiapan</label>
+                        <select id="newTaskStatus" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            <option value="todo">Belum Mulai</option>
+                            <option value="progress">Sedang Dikerjakan</option>
+                            <option value="done">Selesai</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1">Prioritas Kerja</label>
+                        <select id="newTaskPriority" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            <option value="Rendah">Rendah (Santai)</option>
+                            <option value="Sedang" selected>Sedang (Normal)</option>
+                            <option value="Tinggi">Tinggi (Penting)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-2 mt-6">
+                <button onclick="closeModal('modalNewTask')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-lg text-xs font-semibold transition-all">Batal</button>
+                <button onclick="saveNewTask()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-xs font-semibold transition-all shadow-md">Simpan Tugas</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Modal New Rundown -->
+    <div id="modalNewRundown" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <h3 class="heading-font text-xl font-bold text-slate-800 mb-2">Tambah Sesi Rundown</h3>
+            <p class="text-xs text-slate-500 mb-4">Isi jadwal acara secara mendetail untuk mempermudah pemantauan operator (OP) di lapangan.</p>
+            
+            <div class="space-y-3 text-xs">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1">Waktu Mulai</label>
+                        <input type="time" id="runStart" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1">Waktu Selesai</label>
+                        <input type="time" id="runEnd" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1">Nama Sesi Kegiatan</label>
+                    <input type="text" id="runTitle" placeholder="cth: Sambutan Ketua Panitia" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1">Detail Teknis / Deskripsi Sesi</label>
+                    <textarea id="runDesc" rows="2" placeholder="cth: MC memanggil Presiden Mahasiswa BEM, mic disiapkan" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1">Divisi Penanggung Jawab</label>
+                        <select id="runDiv" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            <!-- Dynamic Load -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1">Kesiapan Teknis</label>
+                        <select id="runStatus" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            <option value="ready">Sudah Siap (Ready)</option>
+                            <option value="pending">Sedang Dipersiapkan</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-2 mt-6">
+                <button onclick="closeModal('modalNewRundown')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-lg text-xs font-semibold transition-all">Batal</button>
+                <button onclick="saveNewRundown()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-xs font-semibold transition-all shadow-md">Simpan Sesi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Modal New Document -->
+    <div id="modalNewDoc" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <h3 class="heading-font text-xl font-bold text-slate-800 mb-2">Registrasi Berkas Birokrasi</h3>
+            <p class="text-xs text-slate-500 mb-4">Pantau terus dokumen-dokumen penting terkait izin dan kelancaran kegiatan BEM.</p>
+            
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1">Nama / Judul Berkas</label>
+                    <input type="text" id="docTitle" placeholder="cth: Proposal Kegiatan Rektorat, Surat Izin Aula" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-semibold mb-1">Target Dinas / Instansi Penerima</label>
+                    <input type="text" id="docTarget" placeholder="cth: Dekan, BAUK, Sponsor Brand X" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1">Status Persetujuan</label>
+                        <select id="docStatus" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            <option value="draft">Konsep / Draft</option>
+                            <option value="review">Menunggu Review</option>
+                            <option value="approved">Disetujui (Approved)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-600 font-semibold mb-1">Divisi Penanggung Jawab</label>
+                        <select id="docDiv" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            <!-- Dynamic Load -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-2 mt-6">
+                <button onclick="closeModal('modalNewDoc')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-lg text-xs font-semibold transition-all">Batal</button>
+                <button onclick="saveNewDoc()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-xs font-semibold transition-all shadow-md">Daftarkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Modal Manage Divisions -->
+    <div id="modalManageDivisions" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl relative">
+            <h3 class="heading-font text-xl font-bold text-slate-800 mb-2">Kelola Divisi Panitia</h3>
+            <p class="text-xs text-slate-500 mb-4">Tambahkan divisi baru atau hapus divisi yang tidak diperlukan untuk event ini.</p>
+            
+            <!-- Add New Division Form -->
+            <div class="flex gap-2 mb-4">
+                <input type="text" id="newDivInput" placeholder="Nama divisi baru... (cth: Logistik)" class="flex-grow border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                <button onclick="addDivision()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm">Tambah</button>
+            </div>
+            
+            <!-- Division List -->
+            <div class="max-h-60 overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100" id="divisionManageList">
+                <!-- Loaded dynamically -->
+            </div>
+
+            <div class="flex gap-2 mt-6">
+                <button onclick="closeModal('modalManageDivisions')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-lg text-xs font-semibold transition-all">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Modal Delete Event Confirmation -->
+    <div id="modalDeleteEventConfirm" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl relative border-t-4 border-rose-500">
+            <div class="flex items-center gap-3 text-rose-500 mb-3">
+                <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                <h3 class="heading-font text-xl font-bold">Hapus Kegiatan?</h3>
+            </div>
+            <p class="text-xs text-slate-500 mb-2">Apakah Anda yakin ingin menghapus kegiatan ini?</p>
+            <p class="text-sm font-bold text-slate-800 mb-4 bg-slate-50 p-3 rounded-lg border border-slate-200" id="deleteEventNameDisplay">Nama Event</p>
+            <p class="text-[11px] text-rose-500 font-semibold mb-6">Tindakan ini tidak dapat dibatalkan. Seluruh data tugas divisi, rundown, anggaran keuangan, dan kelengkapan dokumen birokrasi terkait akan ikut terhapus secara permanen.</p>
+
+            <div class="flex gap-2">
+                <button onclick="closeModal('modalDeleteEventConfirm')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 rounded-lg text-xs font-semibold transition-all">Batal</button>
+                <button onclick="confirmDeleteEvent()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white py-2.5 rounded-lg text-xs font-semibold transition-all shadow-md">Ya, Hapus Permanen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-6 mt-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="text-sm heading-font font-bold text-white">Badan Eksekutif Mahasiswa (BEM) © 2026</p>
+            <p class="text-xs text-slate-500">Karya Digital Mandiri untuk Mengharmonisasikan Manajemen Event & Kinerja Divisi Kepanitiaan.</p>
+        </div>
+    </footer>
+
+    <!-- STATE MANAGEMENT & INTERACTION JAVASCRIPT -->
+    <script>
+        // Default Mock Data for immediate stunning experience
+        const defaultEvents = [
+            {
+                id: "evt-101",
+                title: "Malam Keakraban & Upgrading BEM",
+                category: "Internal BEM",
+                desc: "Proyek persiapan kegiatan internal BEM untuk mempererat relasi anggota dan membekali kemampuan manajemen kepemimpinan organisasi.",
+                date: "2026-06-12",
+                venue: "Villa Kampus Sejahtera",
+                divisions: ["Acara", "Humas", "Perkap", "Danus", "Konsumsi", "Dokpub"],
+                tasks: [
+                    { id: "tsk-1", title: "Menyusun TOR & Konsep Acara", division: "Acara", pic: "Andi (CO Acara)", status: "done", priority: "Tinggi" },
+                    { id: "tsk-2", title: "Survei Lokasi Villa & Negosiasi", division: "Perkap", pic: "Hasan", status: "progress", priority: "Sedang" },
+                    { id: "tsk-3", title: "Pembuatan Poster Publikasi IG", division: "Dokpub", pic: "Citra", status: "todo", priority: "Tinggi" },
+                    { id: "tsk-4", title: "Pemesanan Konsumsi Pembuka & Penutup", division: "Konsumsi", pic: "Siti", status: "todo", priority: "Rendah" },
+                    { id: "tsk-5", title: "Menghubungi Pemateri Kepemimpinan", division: "Acara", pic: "Nanda", status: "progress", priority: "Tinggi" },
+                    { id: "tsk-6", title: "Menyebar proposal ke Donatur Kampus", division: "Danus", pic: "Yudi", status: "progress", priority: "Tinggi" }
+                ],
+                rundown: [
+                    { id: "rd-1", start: "14:00", end: "14:30", title: "Registrasi Peserta di Lobby Kampus", desc: "Panitia Humas menyambut, membagikan snack kotak.", division: "Humas", status: "ready" },
+                    { id: "rd-2", start: "14:30", end: "16:00", title: "Perjalanan ke Lokasi Villa", desc: "Transportasi dikoordinasikan oleh divisi Perkap.", division: "Perkap", status: "ready" },
+                    { id: "rd-3", start: "16:00", end: "16:30", title: "Ice Breaking & Pembagian Kamar", desc: "MC memimpin permainan singkat.", division: "Acara", status: "pending" }
+                ],
+                budget: [
+                    { id: "bg-1", type: "pemasukan", name: "Dana Kemahasiswaan Kampus", division: "Umum", amount: 2500000 },
+                    { id: "bg-2", type: "pemasukan", name: "Iuran Wajib Pengurus BEM", division: "Umum", amount: 1200000 },
+                    { id: "bg-3", type: "pengeluaran", name: "Sewa Aula & Villa (DP)", division: "Perkap", amount: 1500000 },
+                    { id: "bg-4", type: "pengeluaran", name: "Spanduk Kegiatan & Dekorasi", division: "Dokpub", amount: 350000 }
+                ],
+                documents: [
+                    { id: "dc-1", title: "Proposal Penyelenggaraan Makrab", target: "Wakil Dekan III", division: "BPH", status: "approved" },
+                    { id: "dc-2", title: "Surat Permohonan Dispensation Kuliah", target: "Dosen Pengajar", division: "Humas", status: "review" },
+                    { id: "dc-3", title: "Formulir Sewa Sound System Kampus", target: "Sarpras BAUK", division: "Perkap", status: "draft" }
+                ],
+                members: [
+                    { id: "mem-1", name: "Andi Saputra", division: "Acara", role: "Koordinator" },
+                    { id: "mem-2", name: "Nanda Kirana", division: "Acara", role: "Staff" },
+                    { id: "mem-3", name: "Rahmat Hidayat", division: "Perkap", role: "Koordinator" },
+                    { id: "mem-4", name: "Hasan Bisri", division: "Perkap", role: "Staff" },
+                    { id: "mem-5", name: "Citra Lestari", division: "Dokpub", role: "Staff" },
+                    { id: "mem-6", name: "Siti Aminah", division: "Konsumsi", role: "Koordinator" },
+                    { id: "mem-7", name: "Yudi Pratama", division: "Danus", role: "Koordinator" }
+                ]
+            },
+            {
+                id: "evt-102",
+                title: "Seminar Kebangsaan & Demokrasi",
+                category: "Publik & Eksternal",
+                desc: "Seminar umum mengundang praktisi politik nasional guna mencerdaskan mahasiswa dalam kepemimpinan masa depan.",
+                date: "2026-08-01",
+                venue: "Gedung Serba Guna Rektorat",
+                divisions: ["Acara", "Humas", "Danus", "Dokpub"],
+                tasks: [],
+                rundown: [],
+                budget: [],
+                documents: [],
+                members: []
+            }
+        ];
+
+        // Core Global State
+        let events = [];
+        let activeEventId = "evt-101";
+        let activeTaskFilter = "Semua";
+
+        // Initialize App
+        window.onload = function() {
+            // Load from LocalStorage if exists
+            const savedData = localStorage.getItem("bem_eventhub_data");
+            const savedActiveId = localStorage.getItem("bem_eventhub_active_id");
+
+            if (savedData) {
+                events = JSON.parse(savedData);
+            } else {
+                events = defaultEvents;
+                saveToLocalStorage();
+            }
+
+            if (savedActiveId && events.some(e => e.id === savedActiveId)) {
+                activeEventId = savedActiveId;
+            } else if (events.length > 0) {
+                activeEventId = events[0].id;
+            }
+
+            renderEventSelectors();
+            renderActiveEventData();
+            startCountdown();
+            showToast("Selamat datang di BEM EventHub! Data berhasil diselaraskan.", "success");
+        };
+
+        // Utility to save State
+        function saveToLocalStorage() {
+            localStorage.setItem("bem_eventhub_data", JSON.stringify(events));
+            localStorage.setItem("bem_eventhub_active_id", activeEventId);
+        }
+
+        // Switch Top Tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-blue-600', 'text-blue-600');
+                btn.classList.add('border-transparent', 'text-slate-500');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+                content.classList.remove('block');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.remove('border-transparent', 'text-slate-500');
+            activeBtn.classList.add('border-blue-600', 'text-blue-600');
+
+            const activeContent = document.getElementById(`content-${tabId}`);
+            activeContent.classList.remove('hidden');
+            activeContent.classList.add('block');
+        }
+
+        // Render Dropdown Event
+        function renderEventSelectors() {
+            const selector = document.getElementById("eventSelector");
+            selector.innerHTML = "";
+            events.forEach(evt => {
+                const opt = document.createElement("option");
+                opt.value = evt.id;
+                opt.textContent = evt.title;
+                if (evt.id === activeEventId) opt.selected = true;
+                selector.appendChild(opt);
+            });
+        }
+
+        // Change Event via Dropdown Selection
+        function changeActiveEvent() {
+            const selector = document.getElementById("eventSelector");
+            activeEventId = selector.value;
+            saveToLocalStorage();
+            renderActiveEventData();
+            startCountdown();
+            showToast("Berhasil beralih kegiatan kepanitiaan.", "info");
+        }
+
+        // Render All Elements for Active Event
+        function renderActiveEventData() {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            // Ensure divisions exist
+            if (!evt.divisions) {
+                evt.divisions = ["Acara", "Humas", "Perkap", "Danus", "Konsumsi", "Dokpub"];
+            }
+
+            // Ensure members exist
+            if (!evt.members) {
+                evt.members = [];
+            }
+
+            // Header Banner
+            document.getElementById("dashEventCategory").textContent = evt.category || "Program Kerja BEM";
+            document.getElementById("dashEventTitle").textContent = evt.title;
+            document.getElementById("dashEventDesc").textContent = evt.desc || "Tidak ada deskripsi singkat.";
+            
+            // Format Date
+            if(evt.date) {
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                const dt = new Date(evt.date);
+                document.getElementById("dashEventDate").textContent = dt.toLocaleDateString('id-ID', options);
+            } else {
+                document.getElementById("dashEventDate").textContent = "Belum ditentukan";
+            }
+            document.getElementById("dashEventVenue").textContent = evt.venue || "Lokasi belum diputuskan";
+
+            // Populate Fast Edit Fields in Dashboard
+            document.getElementById("editEventName").value = evt.title;
+            document.getElementById("editEventDate").value = evt.date || "";
+            document.getElementById("editEventCat").value = evt.category || "";
+            document.getElementById("editEventVenue").value = evt.venue || "";
+
+            // Dynamic divisions features
+            renderDivisionDropdowns(evt);
+            renderTaskFilters(evt);
+
+            // Calculate Dashboard Stats
+            renderStatsAndDividers(evt);
+
+            // Render Tab Sub-contents
+            renderKanbanBoard(evt);
+            renderRundownTable(evt);
+            renderBudgetModule(evt);
+            renderDocumentsGrid(evt);
+            renderMembersTab(evt);
+        }
+
+        // Main calculations and stats loader
+        function renderStatsAndDividers(evt) {
+            // Tasks Progres
+            const totalTasks = evt.tasks.length;
+            const completedTasks = evt.tasks.filter(t => t.status === 'done').length;
+            const progressPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            
+            document.getElementById("statProgressPercent").textContent = `${progressPercent}%`;
+            document.getElementById("statProgressSubtext").textContent = `${completedTasks} dari ${totalTasks} tugas selesai`;
+
+            // Rundown Info
+            const sessionsCount = evt.rundown.length;
+            let totalDur = 0;
+            evt.rundown.forEach(r => {
+                if(r.start && r.end) {
+                    const [sH, sM] = r.start.split(':').map(Number);
+                    const [eH, eM] = r.end.split(':').map(Number);
+                    const dur = (eH*60 + eM) - (sH*60 + sM);
+                    if (dur > 0) totalDur += dur;
+                }
+            });
+            document.getElementById("statRundownCount").textContent = `${sessionsCount} Sesi`;
+            document.getElementById("statRundownDuration").textContent = `Total durasi: ${totalDur} menit`;
+
+            // Budget Info
+            const inc = evt.budget.filter(b => b.type === 'pemasukan').reduce((acc, c) => acc + Number(c.amount), 0);
+            const exp = evt.budget.filter(b => b.type === 'pengeluaran').reduce((acc, c) => acc + Number(c.amount), 0);
+            const balance = inc - exp;
+            
+            document.getElementById("statBudgetBalance").textContent = formatRupiah(balance);
+            const ratioPercent = inc > 0 ? Math.round((exp / inc) * 100) : 0;
+            const ratioLabel = document.getElementById("statBudgetRatio");
+            if (balance < 0) {
+                ratioLabel.textContent = "Defisit Anggaran!";
+                ratioLabel.className = "text-xs text-rose-600 mt-1 font-semibold";
+            } else if (ratioPercent > 80) {
+                ratioLabel.textContent = "Hampir Batas Kritis (80%+)";
+                ratioLabel.className = "text-xs text-amber-600 mt-1 font-semibold";
+            } else {
+                ratioLabel.textContent = "Aliran Dana Sehat";
+                ratioLabel.className = "text-xs text-emerald-600 mt-1 font-semibold";
+            }
+
+            // Documents Status
+            const totalDocs = evt.documents.length;
+            const approvedDocs = evt.documents.filter(d => d.status === 'approved').length;
+            document.getElementById("statDocsApproved").textContent = `${approvedDocs} / ${totalDocs}`;
+            const pendingDocs = evt.documents.filter(d => d.status !== 'approved').length;
+            document.getElementById("statDocsPending").textContent = `${pendingDocs} Berkas menanti kelulusan`;
+
+            // Divisi Progress Matrix Calculation
+            const divisions = evt.divisions || ["Acara", "Humas", "Perkap", "Danus", "Konsumsi", "Dokpub"];
+            const divContainer = document.getElementById("divisionProgressContainer");
+            divContainer.innerHTML = "";
+
+            divisions.forEach(div => {
+                const divTasks = evt.tasks.filter(t => t.division === div);
+                const totalDTasks = divTasks.length;
+                const compDTasks = divTasks.filter(t => t.status === 'done').length;
+                const dPercent = totalDTasks > 0 ? Math.round((compDTasks / totalDTasks) * 100) : 0;
+
+                // Color themes
+                let colorClass = "bg-blue-600";
+                if (dPercent < 40) colorClass = "bg-rose-500";
+                else if (dPercent < 80) colorClass = "bg-amber-500";
+                else colorClass = "bg-emerald-500";
+
+                const cardHtml = `
+                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-bold text-sm text-slate-700">Divisi ${div}</span>
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-white text-slate-500 border border-slate-200">${compDTasks}/${totalDTasks} Tugas</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-[10px] text-slate-400 font-semibold uppercase">PROGRES KERJA</span>
+                                <span class="text-xs font-bold text-slate-800">${dPercent}%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div class="${colorClass} h-full transition-all duration-300" style="width: ${dPercent}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                divContainer.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        // Start Countdown Timer
+        let countdownInterval;
+        function startCountdown() {
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt || !evt.date) {
+                updateCountdownDisplay(0, 0, 0);
+                return;
+            }
+
+            const targetDate = new Date(`${evt.date}T08:00:00`).getTime();
+
+            function updateTime() {
+                const now = new Date().getTime();
+                const diff = targetDate - now;
+
+                if (diff <= 0) {
+                    updateCountdownDisplay(0, 0, 0);
+                    clearInterval(countdownInterval);
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                updateCountdownDisplay(days, hours, minutes);
+            }
+
+            updateTime();
+            countdownInterval = setInterval(updateTime, 60000);
+        }
+
+        function updateCountdownDisplay(d, h, m) {
+            document.getElementById("countdownDays").textContent = d.toString().padStart(2, '0');
+            document.getElementById("countdownHours").textContent = h.toString().padStart(2, '0');
+            document.getElementById("countdownMins").textContent = m.toString().padStart(2, '0');
+        }
+
+        // Fast Edit Event basic details
+        function saveEventBasicInfo() {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            evt.title = document.getElementById("editEventName").value.trim();
+            evt.date = document.getElementById("editEventDate").value;
+            evt.category = document.getElementById("editEventCat").value.trim();
+            evt.venue = document.getElementById("editEventVenue").value.trim();
+
+            if (!evt.title) {
+                showToast("Nama kegiatan tidak boleh kosong!", "error");
+                return;
+            }
+
+            saveToLocalStorage();
+            renderEventSelectors();
+            renderActiveEventData();
+            startCountdown();
+            showToast("Informasi dasar kegiatan sukses diperbarui.", "success");
+        }
+
+        // KANBAN SYSTEM
+        function renderTaskFilters(evt) {
+            const container = document.getElementById("taskFiltersContainer");
+            if (!container) return;
+
+            const divs = evt.divisions || ["Acara", "Humas", "Perkap", "Danus", "Konsumsi", "Dokpub"];
+            
+            let html = `<span class="text-xs font-semibold text-slate-500 mr-2">Filter Divisi:</span>`;
+            
+            const activeAllClass = activeTaskFilter === "Semua" ? "bg-slate-800 text-white font-semibold" : "bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium";
+            html += `<button onclick="filterTasks('Semua')" class="task-filter-btn px-3 py-1 text-xs rounded-full transition-all ${activeAllClass}">Semua</button>`;
+
+            divs.forEach(div => {
+                const activeClass = activeTaskFilter === div ? "bg-slate-800 text-white font-semibold" : "bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium";
+                html += `<button onclick="filterTasks('${div}')" class="task-filter-btn px-3 py-1 text-xs rounded-full transition-all ${activeClass}">${div}</button>`;
+            });
+
+            html += `
+                <button onclick="openManageDivisionsModal()" class="text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-bold transition-all flex items-center gap-1 ml-2 border border-blue-200">
+                    <i class="fa-solid fa-gear text-[10px]"></i> Kelola Divisi
+                </button>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function renderDivisionDropdowns(evt) {
+            const divs = evt.divisions || ["Acara", "Humas", "Perkap", "Danus", "Konsumsi", "Dokpub"];
+            
+            // Populate Task Div Dropdown
+            const taskDivSelect = document.getElementById("newTaskDiv");
+            if (taskDivSelect) {
+                taskDivSelect.innerHTML = divs.map(d => `<option value="${d}">${d}</option>`).join('');
+            }
+
+            // Populate Member Div Dropdown
+            const memberDivSelect = document.getElementById("newMemberDiv");
+            if (memberDivSelect) {
+                memberDivSelect.innerHTML = divs.map(d => `<option value="${d}">${d}</option>`).join('');
+            }
+            
+            // Populate Trans Div Dropdown (keeps "Umum" as base option)
+            const transDivSelect = document.getElementById("transDiv");
+            if (transDivSelect) {
+                transDivSelect.innerHTML = `<option value="Umum">Umum (BEM)</option>` + 
+                    divs.map(d => `<option value="${d}">${d}</option>`).join('');
+            }
+            
+            // Populate Rundown Div Dropdown
+            const runDivSelect = document.getElementById("runDiv");
+            if (runDivSelect) {
+                runDivSelect.innerHTML = divs.map(d => `<option value="${d}">${d}</option>`).join('');
+            }
+            
+            // Populate Doc Div Dropdown (keeps "BPH" as base option)
+            const docDivSelect = document.getElementById("docDiv");
+            if (docDivSelect) {
+                docDivSelect.innerHTML = `<option value="BPH">BPH (Inti BEM)</option>` + 
+                    divs.map(d => `<option value="${d}">${d}</option>`).join('');
+            }
+        }
+
+        function filterTasks(divName) {
+            activeTaskFilter = divName;
+            const evt = events.find(e => e.id === activeEventId);
+            if (evt) {
+                renderTaskFilters(evt);
+                renderKanbanBoard(evt);
+            }
+        }
+
+        function openManageDivisionsModal() {
+            renderManageDivisionsList();
+            document.getElementById("modalManageDivisions").classList.remove("hidden");
+        }
+
+        function renderManageDivisionsList() {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            const listContainer = document.getElementById("divisionManageList");
+            listContainer.innerHTML = "";
+
+            if (evt.divisions.length === 0) {
+                listContainer.innerHTML = `<p class="p-4 text-xs text-slate-400 text-center">Belum ada divisi aktif. Tambahkan divisi baru di atas.</p>`;
+                return;
+            }
+
+            evt.divisions.forEach(div => {
+                const taskCount = evt.tasks ? evt.tasks.filter(t => t.division === div).length : 0;
+
+                const row = document.createElement("div");
+                row.className = "flex items-center justify-between p-3 text-xs border-b border-slate-100 last:border-none";
+                row.innerHTML = `
+                    <div>
+                        <span class="font-bold text-slate-800">Divisi ${div}</span>
+                        <span class="text-[10px] text-slate-400 block">${taskCount} tugas aktif</span>
+                    </div>
+                    <button onclick="deleteDivision('${div}')" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 px-2.5 py-1 rounded-lg transition-all font-semibold flex items-center gap-1">
+                        <i class="fa-regular fa-trash-can text-[10px]"></i> Hapus
+                    </button>
+                `;
+                listContainer.appendChild(row);
+            });
+        }
+
+        function addDivision() {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            const input = document.getElementById("newDivInput");
+            const divName = input.value.trim();
+
+            if (!divName) {
+                showToast("Nama divisi tidak boleh kosong!", "error");
+                return;
+            }
+
+            if (evt.divisions.includes(divName)) {
+                showToast("Divisi tersebut sudah ada!", "error");
+                return;
+            }
+
+            evt.divisions.push(divName);
+            saveToLocalStorage();
+            renderActiveEventData();
+            renderManageDivisionsList();
+            input.value = "";
+            showToast(`Divisi ${divName} berhasil ditambahkan!`, "success");
+        }
+
+        function deleteDivision(divName) {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            evt.divisions = evt.divisions.filter(d => d !== divName);
+
+            // Reassign associated components to default fallback
+            const fallback = "Umum";
+            if (evt.tasks) {
+                evt.tasks.forEach(t => {
+                    if (t.division === divName) t.division = fallback;
+                });
+            }
+            if (evt.rundown) {
+                evt.rundown.forEach(r => {
+                    if (r.division === divName) r.division = fallback;
+                });
+            }
+            if (evt.budget) {
+                evt.budget.forEach(b => {
+                    if (b.division === divName) b.division = fallback;
+                });
+            }
+            if (evt.documents) {
+                evt.documents.forEach(d => {
+                    if (d.division === divName) d.division = fallback;
+                });
+            }
+            if (evt.members) {
+                evt.members.forEach(m => {
+                    if (m.division === divName) m.division = fallback;
+                });
+            }
+
+            if (!evt.divisions.includes(fallback)) {
+                evt.divisions.push(fallback);
+            }
+
+            if (activeTaskFilter === divName) {
+                activeTaskFilter = "Semua";
+            }
+
+            saveToLocalStorage();
+            renderActiveEventData();
+            renderManageDivisionsList();
+            showToast(`Divisi ${divName} dihapus. Elemen terkait dialihkan ke '${fallback}'.`, "info");
+        }
+
+        function renderKanbanBoard(evt) {
+            const todoCol = document.getElementById("column-todo");
+            const progCol = document.getElementById("column-progress");
+            const doneCol = document.getElementById("column-done");
+
+            todoCol.innerHTML = "";
+            progCol.innerHTML = "";
+            doneCol.innerHTML = "";
+
+            let todoCount = 0, progCount = 0, doneCount = 0;
+
+            const filteredTasks = activeTaskFilter === "Semua" 
+                ? evt.tasks 
+                : evt.tasks.filter(t => t.division === activeTaskFilter);
+
+            filteredTasks.forEach(task => {
+                const priorityColor = task.priority === "Tinggi" ? "bg-rose-100 text-rose-800 border-rose-200" 
+                                    : task.priority === "Sedang" ? "bg-amber-100 text-amber-800 border-amber-200" 
+                                    : "bg-slate-100 text-slate-800 border-slate-200";
+
+                const cardHtml = `
+                    <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow transition-shadow">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <span class="bg-blue-50 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-100">${task.division}</span>
+                                <span class="border text-[10px] font-semibold px-2 py-0.5 rounded ${priorityColor}">${task.priority}</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-slate-800">${task.title}</h4>
+                            <p class="text-[11px] text-slate-400 mt-1 flex items-center gap-1"><i class="fa-regular fa-user"></i> PIC: ${task.pic || "Belum ada"}</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-100 mt-4 pt-3 gap-2">
+                            <button onclick="deleteTask('${task.id}')" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition-colors text-xs" title="Hapus Tugas">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                            <div class="flex gap-1.5">
+                                ${task.status !== 'todo' ? `<button onclick="moveTask('${task.id}', 'prev')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-2 py-1 rounded border border-slate-200" title="Geser Kiri"><i class="fa-solid fa-chevron-left"></i></button>` : ''}
+                                ${task.status !== 'done' ? `<button onclick="moveTask('${task.id}', 'next')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1 rounded border border-blue-700" title="Geser Kanan"><i class="fa-solid fa-chevron-right"></i></button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                if (task.status === "todo") {
+                    todoCol.insertAdjacentHTML('beforeend', cardHtml);
+                    todoCount++;
+                } else if (task.status === "progress") {
+                    progCol.insertAdjacentHTML('beforeend', cardHtml);
+                    progCount++;
+                } else if (task.status === "done") {
+                    doneCol.insertAdjacentHTML('beforeend', cardHtml);
+                    doneCount++;
+                }
+            });
+
+            document.getElementById("count-todo").textContent = todoCount;
+            document.getElementById("count-progress").textContent = progCount;
+            document.getElementById("count-done").textContent = doneCount;
+        }
+
+        // Shift task between kanban states
+        function moveTask(taskId, dir) {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            const task = evt.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            const states = ["todo", "progress", "done"];
+            let idx = states.indexOf(task.status);
+
+            if (dir === 'next' && idx < 2) {
+                task.status = states[idx + 1];
+            } else if (dir === 'prev' && idx > 0) {
+                task.status = states[idx - 1];
+            }
+
+            saveToLocalStorage();
+            renderActiveEventData();
+            showToast("Status tugas berhasil diubah.", "success");
+        }
+
+        // Delete Task
+        function deleteTask(taskId) {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            evt.tasks = evt.tasks.filter(t => t.id !== taskId);
+            saveToLocalStorage();
+            renderActiveEventData();
+            showToast("Tugas dihapus dari papan.", "info");
+        }
+
+        // RUNDOWN SYSTEM
+        function renderRundownTable(evt) {
+            const body = document.getElementById("rundownTableBody");
+            body.innerHTML = "";
+
+            if (evt.rundown.length === 0) {
+                body.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="p-6 text-center text-slate-400 font-medium">Belum ada rundown terdaftar. Silakan buat sesi panggung baru.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Sort rundown by start time
+            const sortedRundown = [...evt.rundown].sort((a,b) => a.start.localeCompare(b.start));
+
+            sortedRundown.forEach(run => {
+                let duration = "?";
+                if(run.start && run.end) {
+                    const [sH, sM] = run.start.split(':').map(Number);
+                    const [eH, eM] = run.end.split(':').map(Number);
+                    const dur = (eH*60 + eM) - (sH*60 + sM);
+                    duration = dur > 0 ? `${dur} Menit` : "-";
+                }
+
+                const statusBadge = run.status === 'ready' 
+                    ? `<span class="bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs px-2 py-0.5 rounded-full font-semibold">Ready</span>`
+                    : `<span class="bg-amber-50 text-amber-700 border border-amber-100 text-xs px-2 py-0.5 rounded-full font-semibold">Draft/Persiapan</span>`;
+
+                const rowHtml = `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-3 font-semibold text-slate-700 whitespace-nowrap"><i class="fa-regular fa-clock text-blue-500 mr-1.5"></i> ${run.start} - ${run.end}</td>
+                        <td class="p-3 font-bold text-slate-800">${run.title}</td>
+                        <td class="p-3 text-xs text-slate-500 max-w-xs break-words">${run.desc || "-"}</td>
+                        <td class="p-3"><span class="bg-blue-50 border border-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded">${run.division}</span></td>
+                        <td class="p-3 text-center text-xs font-semibold text-slate-600">${duration}</td>
+                        <td class="p-3 text-center">${statusBadge}</td>
+                        <td class="p-3 text-center">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <button onclick="toggleRundownStatus('${run.id}')" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-1 rounded text-xs font-semibold" title="Ubah Kesiapan">
+                                    Toggle Kesiapan
+                                </button>
+                                <button onclick="deleteRundown('${run.id}')" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1.5 rounded" title="Hapus">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                body.insertAdjacentHTML('beforeend', rowHtml);
+            });
+        }
+
+        function toggleRundownStatus(runId) {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            const run = evt.rundown.find(r => r.id === runId);
+            if (run) {
+                run.status = run.status === 'ready' ? 'pending' : 'ready';
+                saveToLocalStorage();
+                renderActiveEventData();
+                showToast("Status kesiapan rundown diganti.", "success");
+            }
+        }
+
+        function deleteRundown(runId) {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            evt.rundown = evt.rundown.filter(r => r.id !== runId);
+            saveToLocalStorage();
+            renderActiveEventData();
+            showToast("Sesi rundown terhapus.", "info");
+        }
+
+        // BUDGET SYSTEM
+        function renderBudgetModule(evt) {
+            const body = document.getElementById("transactionTableBody");
+            body.innerHTML = "";
+
+            const transactions = evt.budget || [];
+
+            if (transactions.length === 0) {
+                body.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="p-6 text-center text-slate-400 font-medium">Belum ada transaksi anggaran yang tercatat.</td>
+                    </tr>
+                `;
+                // Nullify visual stats
+                updateBudgetStats(0, 0, 0);
+                return;
+            }
+
+            let totalIn = 0;
+            let totalOut = 0;
+
+            transactions.forEach(trans => {
+                const isIn = trans.type === 'pemasukan';
+                const amtFormatted = formatRupiah(trans.amount);
+                if (isIn) totalIn += Number(trans.amount);
+                else totalOut += Number(trans.amount);
+
+                const rowHtml = `
+                    <tr class="hover:bg-slate-50 transition-colors text-xs">
+                        <td class="p-3 font-semibold text-slate-800">${trans.name}</td>
+                        <td class="p-3"><span class="bg-slate-100 border border-slate-200 text-slate-600 px-2 py-0.5 rounded">${trans.division}</span></td>
+                        <td class="p-3 text-right text-emerald-600 font-bold">${isIn ? `+ ${amtFormatted}` : '-'}</td>
+                        <td class="p-3 text-right text-rose-600 font-bold">${!isIn ? `- ${amtFormatted}` : '-'}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteTransaction('${trans.id}')" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1 rounded" title="Hapus Anggaran">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                body.insertAdjacentHTML('beforeend', rowHtml);
+            });
+
+            const bal = totalIn - totalOut;
+            updateBudgetStats(totalIn, totalOut, bal);
+        }
+
+        function updateBudgetStats(totIn, totOut, bal) {
+            document.getElementById("totalPemasukan").textContent = formatRupiah(totIn);
+            document.getElementById("totalPengeluaran").textContent = formatRupiah(totOut);
+            document.getElementById("budgetBalance").textContent = formatRupiah(bal);
+
+            // Progress Fill bar
+            const usagePercent = totIn > 0 ? Math.min(Math.round((totOut / totIn) * 100), 100) : 0;
+            const fillBar = document.getElementById("budgetProgressFill");
+            if (fillBar) {
+                fillBar.style.width = `${usagePercent}%`;
+
+                if (usagePercent > 80) {
+                    fillBar.className = "bg-gradient-to-r from-orange-500 to-rose-600 h-full transition-all duration-500";
+                } else {
+                    fillBar.className = "bg-gradient-to-r from-blue-500 to-emerald-500 h-full transition-all duration-500";
+                }
+            }
+
+            const label = document.getElementById("budgetUsageLabel");
+            if (label) {
+                label.textContent = `Penggunaan anggaran: ${usagePercent}% dari total pemasukan`;
+            }
+        }
+
+        function addTransaction() {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            const name = document.getElementById("transName").value.trim();
+            const amount = document.getElementById("transAmount").value;
+            const division = document.getElementById("transDiv").value;
+            const type = document.querySelector('input[name="transType"]:checked').value;
+
+            if (!name || !amount || Number(amount) <= 0) {
+                showToast("Isi nama item dan nilai Rupiah dengan valid!", "error");
+                return;
+            }
+
+            const trans = {
+                id: `bg-${Date.now()}`,
+                type: type,
+                name: name,
+                division: division,
+                amount: Number(amount)
+            };
+
+            if(!evt.budget) evt.budget = [];
+            evt.budget.push(trans);
+
+            saveToLocalStorage();
+            renderActiveEventData();
+            showToast("Transaksi berhasil dicatat dalam buku kas.", "success");
+
+            // Reset Form Fields
+            document.getElementById("transName").value = "";
+            document.getElementById("transAmount").value = "";
+        }
+
+        // Delete budget record
+        function deleteTransaction(transId) {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            evt.budget = evt.budget.filter(b => b.id !== transId);
+            saveToLocalStorage();
+            renderActiveEventData();
+            showToast("Catatan transaksi telah dihapus.", "info");
+        }
+
+        // BIROKRASI & DOKUMEN SYSTEM
+        function renderDocumentsGrid(evt) {
+            const grid = document.getElementById("documentsGrid");
+            grid.innerHTML = "";
+
+            if (evt.documents.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-1 md:col-span-3 text-center py-8 text-slate-400 font-medium">Belum ada berkas terdaftar. Silakan daftarkan surat/proposal kegiatan.</div>
+                `;
+                return;
+            }
+
+            evt.documents.forEach(doc => {
+                let statusBadge = "";
+                let bgBorder = "";
+
+                if (doc.status === 'approved') {
+                    statusBadge = `<span class="bg-emerald-500 text-white text-[10px] font-extrabold px-3 py-1 rounded-full"><i class="fa-solid fa-circle-check"></i> DISAPROVE / OK</span>`;
+                    bgBorder = "border-emerald-200 bg-emerald-50/20";
+                } else if (doc.status === 'review') {
+                    statusBadge = `<span class="bg-amber-500 text-white text-[10px] font-extrabold px-3 py-1 rounded-full"><i class="fa-solid fa-spinner animate-spin"></i> REVIEW BIROKRASI</span>`;
+                    bgBorder = "border-amber-200 bg-amber-50/20";
+                } else {
+                    statusBadge = `<span class="bg-slate-400 text-white text-[10px] font-extrabold px-3 py-1 rounded-full">DRAFT PANITIA</span>`;
+                    bgBorder = "border-slate-200 bg-white";
+                }
+
+                const cardHtml = `
+                    <div class="border rounded-xl p-5 ${bgBorder} flex flex-col justify-between shadow-sm hover:shadow transition-shadow">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-200">${doc.division}</span>
+                                ${statusBadge}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm mb-1">${doc.title}</h4>
+                                <p class="text-xs text-slate-500"><i class="fa-solid fa-paper-plane mr-1 text-[10px]"></i> Instansi Tujuan: <b>${doc.target}</b></p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between border-t border-slate-200/50 mt-4 pt-3 gap-2">
+                            <button onclick="toggleDocStatus('${doc.id}')" class="text-xs text-blue-600 hover:text-blue-800 font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-arrows-rotate"></i> Ganti Status
+                            </button>
+                            <button onclick="deleteDoc('${doc.id}')" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1.5 rounded transition-colors text-xs" title="Hapus Berkas">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        function toggleDocStatus(docId) {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            const doc = evt.documents.find(d => d.id === docId);
+            if (doc) {
+                const states = ["draft", "review", "approved"];
+                let idx = states.indexOf(doc.status);
+                let nextIdx = (idx + 1) % states.length;
+                doc.status = states[nextIdx];
+
+                saveToLocalStorage();
+                renderActiveEventData();
+                showToast("Status progres berkas berhasil digeser.", "success");
+            }
+        }
+
+        function deleteDoc(docId) {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            evt.documents = evt.documents.filter(d => d.id !== docId);
+            saveToLocalStorage();
+            renderActiveEventData();
+            showToast("Kelengkapan berkas berhasil dihapus.", "info");
+        }
+
+        // MEMBERS PANITIA SYSTEM
+        function renderMembersTab(evt) {
+            const container = document.getElementById("divisionalMembersContainer");
+            if (!container) return;
+
+            container.innerHTML = "";
+            const divs = evt.divisions || ["Acara", "Humas", "Perkap", "Danus", "Konsumsi", "Dokpub"];
+            const members = evt.members || [];
+
+            divs.forEach(div => {
+                const divMembers = members.filter(m => m.division === div);
+                
+                let membersListHtml = "";
+                if (divMembers.length === 0) {
+                    membersListHtml = `
+                        <div class="text-center py-6 text-slate-400 text-xs">
+                            <i class="fa-solid fa-users-slash block text-xl mb-1 opacity-60"></i>
+                            Belum ada anggota terdaftar
+                        </div>
+                    `;
+                } else {
+                    divMembers.forEach(mem => {
+                        const colors = [
+                            "bg-blue-100 text-blue-700", 
+                            "bg-purple-100 text-purple-700", 
+                            "bg-amber-100 text-amber-700", 
+                            "bg-rose-100 text-rose-700", 
+                            "bg-emerald-100 text-emerald-700", 
+                            "bg-indigo-100 text-indigo-700"
+                        ];
+                        const colorClass = colors[mem.name.length % colors.length];
+                        const initials = mem.name ? mem.name.trim().charAt(0).toUpperCase() : "?";
+
+                        membersListHtml += `
+                            <div class="flex items-center justify-between p-2.5 rounded-lg bg-white border border-slate-100 hover:border-slate-200 transition-colors shadow-sm">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${colorClass}">
+                                        ${initials}
+                                    </div>
+                                    <div>
+                                        <h5 class="text-xs font-bold text-slate-800">${mem.name}</h5>
+                                        <p class="text-[10px] text-slate-500 font-medium">${mem.role || "Anggota Staff"}</p>
+                                    </div>
+                                </div>
+                                <button onclick="deleteMember('${mem.id}')" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1.5 rounded transition-all" title="Keluarkan dari Divisi">
+                                    <i class="fa-regular fa-trash-can text-[10px]"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                }
+
+                const cardHtml = `
+                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl flex flex-col gap-3">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-200/60">
+                            <span class="font-bold text-sm text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-user-gear text-blue-500 text-xs"></i> Divisi ${div}
+                            </span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-100">${divMembers.length} Orang</span>
+                        </div>
+                        <div class="space-y-2 max-h-56 overflow-y-auto no-scrollbar">
+                            ${membersListHtml}
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        function addMember() {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            const nameInput = document.getElementById("newMemberName");
+            const divInput = document.getElementById("newMemberDiv");
+            const roleInput = document.getElementById("newMemberRole");
+
+            const name = nameInput.value.trim();
+            const division = divInput.value;
+            const role = roleInput.value.trim();
+
+            if (!name) {
+                showToast("Nama lengkap anggota harus diisi!", "error");
+                return;
+            }
+
+            const newMember = {
+                id: `mem-${Date.now()}`,
+                name: name,
+                division: division,
+                role: role || "Anggota Staff"
+            };
+
+            if (!evt.members) evt.members = [];
+            evt.members.push(newMember);
+
+            saveToLocalStorage();
+            renderActiveEventData();
+            showToast(`${name} berhasil didaftarkan ke Divisi ${division}.`, "success");
+
+            // Reset inputs
+            nameInput.value = "";
+            roleInput.value = "";
+        }
+
+        function deleteMember(memberId) {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            const member = evt.members.find(m => m.id === memberId);
+            const memberName = member ? member.name : "Anggota";
+
+            evt.members = evt.members.filter(m => m.id !== memberId);
+            saveToLocalStorage();
+            renderActiveEventData();
+            showToast(`${memberName} dikeluarkan dari keanggotaan divisi.`, "info");
+        }
+
+        // SAVE NEW DIALOGS
+        // Event Baru
+        function saveNewEvent() {
+            const title = document.getElementById("newEventTitle").value.trim();
+            const desc = document.getElementById("newEventDesc").value.trim();
+            const date = document.getElementById("newEventDate").value;
+            const cat = document.getElementById("newEventCat").value.trim();
+            const venue = document.getElementById("newEventVenue").value.trim();
+
+            if (!title) {
+                showToast("Judul Kegiatan wajib diisi!", "error");
+                return;
+            }
+
+            const newEvent = {
+                id: `evt-${Date.now()}`,
+                title: title,
+                category: cat || "Kegiatan BEM",
+                desc: desc || "Tidak ada deskripsi singkat.",
+                date: date || "",
+                venue: venue || "Belum ditentukan",
+                divisions: ["Acara", "Humas", "Perkap", "Danus", "Konsumsi", "Dokpub"],
+                tasks: [],
+                rundown: [],
+                budget: [],
+                documents: [],
+                members: []
+            };
+
+            events.push(newEvent);
+            activeEventId = newEvent.id;
+
+            saveToLocalStorage();
+            renderEventSelectors();
+            renderActiveEventData();
+            startCountdown();
+            closeModal('modalNewEvent');
+            showToast("Kegiatan baru berhasil diinisialisasi!", "success");
+
+            // Reset Form Fields
+            document.getElementById("newEventTitle").value = "";
+            document.getElementById("newEventDesc").value = "";
+            document.getElementById("newEventDate").value = "";
+            document.getElementById("newEventCat").value = "";
+            document.getElementById("newEventVenue").value = "";
+        }
+
+        // Tugas Baru
+        function saveNewTask() {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            const title = document.getElementById("newTaskTitle").value.trim();
+            const division = document.getElementById("newTaskDiv").value;
+            const pic = document.getElementById("newTaskPic").value.trim();
+            const status = document.getElementById("newTaskStatus").value;
+            const priority = document.getElementById("newTaskPriority").value;
+
+            if (!title) {
+                showToast("Nama tugas wajib diisi!", "error");
+                return;
+            }
+
+            const task = {
+                id: `tsk-${Date.now()}`,
+                title: title,
+                division: division,
+                pic: pic || "Tanpa PIC",
+                status: status,
+                priority: priority
+            };
+
+            if(!evt.tasks) evt.tasks = [];
+            evt.tasks.push(task);
+
+            saveToLocalStorage();
+            renderActiveEventData();
+            closeModal('modalNewTask');
+            showToast("Tugas berhasil ditambahkan ke divisi terkait.", "success");
+
+            // Reset
+            document.getElementById("newTaskTitle").value = "";
+            document.getElementById("newTaskPic").value = "";
+        }
+
+        // Rundown Sesi Baru
+        function saveNewRundown() {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            const start = document.getElementById("runStart").value;
+            const end = document.getElementById("runEnd").value;
+            const title = document.getElementById("runTitle").value.trim();
+            const desc = document.getElementById("runDesc").value.trim();
+            const div = document.getElementById("runDiv").value;
+            const status = document.getElementById("runStatus").value;
+
+            if (!start || !end || !title) {
+                showToast("Sesi waktu dan nama acara wajib dilengkapi!", "error");
+                return;
+            }
+
+            const run = {
+                id: `rd-${Date.now()}`,
+                start: start,
+                end: end,
+                title: title,
+                desc: desc || "",
+                division: div,
+                status: status
+            };
+
+            if(!evt.rundown) evt.rundown = [];
+            evt.rundown.push(run);
+
+            saveToLocalStorage();
+            renderActiveEventData();
+            closeModal('modalNewRundown');
+            showToast("Rundown panggung berhasil dijadwalkan.", "success");
+
+            // Reset Form Fields
+            document.getElementById("runStart").value = "";
+            document.getElementById("runEnd").value = "";
+            document.getElementById("runTitle").value = "";
+            document.getElementById("runDesc").value = "";
+        }
+
+        // Dokumen Baru
+        function saveNewDoc() {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+
+            const title = document.getElementById("docTitle").value.trim();
+            const target = document.getElementById("docTarget").value.trim();
+            const status = document.getElementById("docStatus").value;
+            const div = document.getElementById("docDiv").value;
+
+            if (!title || !target) {
+                showToast("Nama dokumen dan target instansi penerima wajib diisi!", "error");
+                return;
+            }
+
+            const doc = {
+                id: `dc-${Date.now()}`,
+                title: title,
+                target: target,
+                division: div,
+                status: status
+            };
+
+            if(!evt.documents) evt.documents = [];
+            evt.documents.push(doc);
+
+            saveToLocalStorage();
+            renderActiveEventData();
+            closeModal('modalNewDoc');
+            showToast("Registrasi berkas birokrasi sukses.", "success");
+
+            // Reset Form Fields
+            document.getElementById("docTitle").value = "";
+            document.getElementById("docTarget").value = "";
+        }
+
+        // Open confirmation modal for deleting event
+        function openDeleteEventModal() {
+            const evt = events.find(e => e.id === activeEventId);
+            if (!evt) return;
+            
+            document.getElementById("deleteEventNameDisplay").textContent = evt.title;
+            document.getElementById("modalDeleteEventConfirm").classList.remove("hidden");
+        }
+
+        // Action to permanently delete active event
+        function confirmDeleteEvent() {
+            const index = events.findIndex(e => e.id === activeEventId);
+            if (index === -1) return;
+
+            const deletedTitle = events[index].title;
+            
+            // Remove the event
+            events.splice(index, 1);
+
+            // If no events left, seed a default blank event to prevent app from breaking
+            if (events.length === 0) {
+                const fallbackEvent = {
+                    id: `evt-${Date.now()}`,
+                    title: "Kegiatan Baru BEM",
+                    category: "Umum",
+                    desc: "Silakan isi detail persiapan kegiatan baru Anda di sini.",
+                    date: new Date().toISOString().split('T')[0],
+                    venue: "Gedung Serba Guna Kampus",
+                    divisions: ["Acara", "Humas", "Perkap", "Danus", "Konsumsi", "Dokpub"],
+                    tasks: [],
+                    rundown: [],
+                    budget: [],
+                    documents: [],
+                    members: []
+                };
+                events.push(fallbackEvent);
+                activeEventId = fallbackEvent.id;
+            } else {
+                // Set active to the first remaining event
+                activeEventId = events[0].id;
+            }
+
+            saveToLocalStorage();
+            renderEventSelectors();
+            renderActiveEventData();
+            startCountdown();
+            closeModal('modalDeleteEventConfirm');
+            showToast(`Kegiatan "${deletedTitle}" telah berhasil dihapus.`, "info");
+        }
+
+        // UTILITY VISUAL & MODALS
+        function openNewEventModal() {
+            document.getElementById("modalNewEvent").classList.remove("hidden");
+        }
+        function openNewTaskModal() {
+            document.getElementById("modalNewTask").classList.remove("hidden");
+        }
+        function openNewRundownModal() {
+            document.getElementById("modalNewRundown").classList.remove("hidden");
+        }
+        function openNewDocModal() {
+            document.getElementById("modalNewDoc").classList.remove("hidden");
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add("hidden");
+        }
+
+        // Format number to IDR Currency
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number);
+        }
+
+        // Custom Toast Notification Maker (No Alert used)
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toastContainer");
+            
+            let colorClasses = "bg-white border-emerald-400 text-slate-800";
+            let icon = '<i class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>';
+            
+            if (type === "error") {
+                colorClasses = "bg-white border-rose-400 text-slate-800";
+                icon = '<i class="fa-solid fa-circle-exclamation text-rose-500 text-lg"></i>';
+            } else if (type === "info") {
+                colorClasses = "bg-white border-blue-400 text-slate-800";
+                icon = '<i class="fa-solid fa-circle-info text-blue-500 text-lg"></i>';
+            }
+
+            const toast = document.createElement("div");
+            toast.className = `flex items-center gap-3 p-4 rounded-xl border-l-4 shadow-lg min-w-[300px] pointer-events-auto transform translate-y-2 opacity-0 transition-all duration-300 ${colorClasses}`;
+            toast.innerHTML = `
+                ${icon}
+                <div class="flex-grow">
+                    <p class="text-xs font-semibold leading-relaxed">${message}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            // Animate In
+            setTimeout(() => {
+                toast.classList.remove("translate-y-2", "opacity-0");
+            }, 50);
+
+            // Animate Out & Destroy
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "translate-y-2");
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
